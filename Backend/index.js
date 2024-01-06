@@ -11,9 +11,7 @@ app.use(cors());
 const server = http.createServer(app);
 const io = socketIO(server);
 
-mongoose.connect(
-  "mongodb+srv://MayDev:MayDev86@cluster0.w2efy7d.mongodb.net/blocks?retryWrites=true&w=majority"
-);
+mongoose.connect(process.env.MONGO_URI);
 
 app.use(express.json());
 
