@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import "./CodeBlock.css";
+import "highlight.js/styles/github.css";
+import hljs from "highlight.js";
 
 function CodeBlock() {
   const block = useParams();
@@ -12,17 +15,21 @@ function CodeBlock() {
       setCodeBlock(resData);
     }
     fetchBlocks();
-  }, []);
+    hljs.highlightAll();
+  }, [block]);
 
   return (
-    <>
+    <div className="block-container">
       {codeBlock && (
         <>
           <h1>{codeBlock.title}</h1>
-          <p>{codeBlock.code}</p>
+          <pre>
+            <code className="code-block hljs language-javascript">{codeBlock.code}</code>
+          </pre>
         </>
       )}
-    </>
+      <Link to="/">Back</Link>
+    </div>
   );
 }
 
