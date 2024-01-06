@@ -1,18 +1,30 @@
-import CodeBlock from "../CodeBlock/CodeBlock";
-
-const CODE_BLOCKS_TEMP = [
-  { id: 1, title: "block1" },
-  { id: 2, title: "block2" },
-  { id: 3, title: "block3" },
-];
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 function LobbyPage() {
-  const blockList = CODE_BLOCKS_TEMP.map(block => <CodeBlock id={block.id} title={block.title} />);
+  const [blocks, setBlocks] = useState();
+
+  useEffect(() => {
+    async function fetchBlocks() {
+      const response = await fetch("http://localhost:3000/");
+      const resData = await response.json();
+      console.log(resData);
+      setBlocks(resData);
+    }
+    fetchBlocks();
+  }, []);
 
   return (
     <>
       <h1>Choose a code block:</h1>
-      <ul>{blockList}</ul>
+      <ul>
+        {blocks &&
+          blocks.map(block => (
+            <li key={block._id}>
+              <Link to={`/blocks/${block._id}`}> {block.title}</Link>
+            </li>
+          ))}
+      </ul>
     </>
   );
 }

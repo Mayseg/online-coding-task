@@ -8,9 +8,19 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
-mongoose.connect(process.env.MONGO_URI);
+mongoose.connect(
+  "mongodb+srv://MayDev:MayDev86@cluster0.w2efy7d.mongodb.net/blocks?retryWrites=true&w=majority"
+);
 
 app.use(express.json());
+app.use((req, res, next) => {
+  // Attach CORS headers
+  // Required when using a detached backend (that runs on a different domain)
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  next();
+});
 app.use(codeBlockRouts);
 
 //handle code changes
