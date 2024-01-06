@@ -1,20 +1,17 @@
 const express = require("express");
-const app = express();
+const mongoose = require("mongoose");
 const http = require("http");
+const socketIO = require("socket.io");
+const codeBlockRouts = require("./codeBlockRouts");
+
+const app = express();
 const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
+const io = socketIO(server);
 
-const blocks = require("./blocks.json");
+mongoose.connect(process.env.MONGO_URI);
 
-app.get("/", (req, res) => {
-  res.send("We running girrrrrr" + blocks);
-});
-
-app.get("/code-blocks", (req, res) => {
-  //fetch code blocks from db
-  res.json(blocks);
-});
+app.use(express.json());
+app.use(codeBlockRouts);
 
 //handle code changes
 io.on("code-change", data => {
@@ -24,11 +21,13 @@ io.on("code-change", data => {
 // handle connection
 io.on("connection", socket => {
   console.log("a user connected");
-});
 
-//handle disconnect
-io.on("disconnect", socket => {
-  console.log("a user disconnected");
+  socket.on("code-change", data => {
+    socket.broadcast.emit("code-changed", data);
+  });
+  socket.on("disconnect", socket => {
+    console.log("a user disconnected");
+  });
 });
 
 server.listen(3000, () => {
